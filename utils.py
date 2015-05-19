@@ -11,9 +11,11 @@ import pickle
 from itertools import tee
 import threading
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 def cross(o, a, b):
     """
@@ -34,16 +36,18 @@ def check_colinear(v):
 def pairwise(iterable):
     """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
     a, b = tee(iterable)
-    next(b, None)
+    next(b)
     return zip(a, b)
 
+def grouped(iterable, n=2):
+    return zip(*[iter(iterable)]*n)
 
 def tripletwise(iterable):
     """s -> (s0,s1,s2), (s1,s2,s3), (s2,s3,s4), ..."""
     a, b, c = tee(iterable, 3)
-    next(b, None)
-    next(c, None)
-    next(c, None)
+    next(b)
+    next(c)
+    next(c)
     return zip(a, b, c)
 
 
@@ -105,3 +109,20 @@ def chooser(key):
     def element_chooser(indexable):
         return indexable[key]
     return element_chooser
+
+
+def json_loader(path):
+    def loader(*args):
+        try:
+            if len(args) % 2 != 0:
+                raise ValueError('Loader requires an even number of parameters.')
+            json_dict = {}
+            for key, file_name in grouped(args):
+                with open('%s/%s' % (path, file_name)) as f:
+                    json_dict[key] = json.load(f)
+            return json_dict
+        except Exception as e:
+            logger.exception(e)
+            raise e
+        return indexable[key]
+    return loader
