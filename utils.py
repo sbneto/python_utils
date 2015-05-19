@@ -12,6 +12,7 @@ from itertools import tee
 import threading
 import logging
 import json
+import bz2
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -126,3 +127,9 @@ def json_loader(path):
             raise e
         return indexable[key]
     return loader
+
+
+def bz2_json_iterator(path):
+    with bz2.BZ2File(path, 'rb') as f:
+        for line in f:
+            yield json.loads(line.decode('utf-8'))
