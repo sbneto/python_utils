@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on 15/09/2014
-
-@author: Samuel
-"""
+__author__ = 'Samuel'
 
 import configparser
 import datetime
@@ -13,6 +8,7 @@ import threading
 import logging
 import json
 import bz2
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -40,8 +36,10 @@ def pairwise(iterable):
     next(b)
     return zip(a, b)
 
+
 def grouped(iterable, n=2):
     return zip(*[iter(iterable)]*n)
+
 
 def tripletwise(iterable):
     """s -> (s0,s1,s2), (s1,s2,s3), (s2,s3,s4), ..."""
@@ -113,19 +111,16 @@ def chooser(key):
 
 
 def json_loader(path):
-    def loader(*args):
+    def loader(files_dict):
         try:
-            if len(args) % 2 != 0:
-                raise ValueError('Loader requires an even number of parameters.')
             json_dict = {}
-            for key, file_name in grouped(args):
+            for key, file_name in files_dict.items():
                 with open('%s/%s' % (path, file_name)) as f:
                     json_dict[key] = json.load(f)
             return json_dict
         except Exception as e:
             logger.exception(e)
             raise e
-        return indexable[key]
     return loader
 
 
@@ -133,3 +128,9 @@ def bz2_json_iterator(path):
     with bz2.BZ2File(path, 'rb') as f:
         for line in f:
             yield json.loads(line.decode('utf-8'))
+
+
+def write_json_object(obj, path, file_name):
+    file_path = '%s\\%s' % (path, file_name)
+    with open(file_path, 'w') as f:
+        json.dump(obj, f)
