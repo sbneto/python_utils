@@ -132,9 +132,9 @@ def bz2_json_iterator(path):
 
 
 def write_json_object(obj, path, file_name):
-    file_path = '%s\\%s' % (path, file_name)
+    file_path = '%s/%s' % (path, file_name)
     with open(file_path, 'w') as f:
         json.dump(obj, f)
 
 def path_name(*args):
-    return '\\'.join(args)
+    return '/'.join(args)

@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 def list_folder(dir_path, full_path=False):
     dir_list = []
     for item in os.listdir(dir_path):
-        item_path = '%s\\%s' % (dir_path, item)
+        item_path = '%s/%s' % (dir_path, item)
         if os.path.isdir(item_path):
             dir_list += list_folder(item_path)
         else:
@@ -32,7 +32,7 @@ def main():
 
     files_list = list_folder(args.path, args.fullpath)
 
-    with open('%s\\%s.json' % (os.getcwd(), os.path.basename(args.path)), 'w') as f:
+    with open('%s/%s.json' % (os.getcwd(), os.path.basename(args.path)), 'w') as f:
         json.dump(files_list, f)
 
 if __name__ == '__main__':
