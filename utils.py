@@ -7,6 +7,7 @@ from itertools import tee
 import threading
 import logging
 import json
+import ujson
 import bz2
 
 
@@ -127,10 +128,13 @@ def json_loader(path):
 def bz2_json_iterator(path):
     with bz2.BZ2File(path, 'rb') as f:
         for line in f:
-            yield json.loads(line.decode('utf-8'))
+            yield ujson.loads(line.decode('utf-8'))
 
 
 def write_json_object(obj, path, file_name):
     file_path = '%s\\%s' % (path, file_name)
     with open(file_path, 'w') as f:
         json.dump(obj, f)
+
+def path_name(*args):
+    return '\\'.join(args)

@@ -7,6 +7,7 @@ import utils
 
 from utils.list_folder import list_folder
 
+
 def is_current_version(results_id, data_path, args):
     try:
         version_path = '%s\\%s\\version.json' % (data_path, results_id)
@@ -65,10 +66,6 @@ def file_cache(f):
     def wrapper(*args, **kwargs):
         if not is_current_version(args[0], args[1], args):
             write_version(args[0], args[1], 'running', args)
-            # sets_loader = utils.json_loader(args[2])
-            # sets = sets_loader(args[3])
-            # new_args = list(args)
-            # new_args[3] = sets
             result = f(*args, **kwargs)
             write_version(args[0], args[1], 'success', args)
             write_result_set(args[0], args[1], args[2])
