@@ -3,14 +3,13 @@ __author__ = 'Samuel'
 import os
 import json
 import functools
-import utils
 
 from utils.list_folder import list_folder
 
 
 def is_current_version(results_id, data_path, args):
     try:
-        version_path = '%s\\%s\\version.json' % (data_path, results_id)
+        version_path = '%s/%s/version.json' % (data_path, results_id)
         if os.path.isfile(version_path):
             with open(version_path, 'r') as f:
                 version_file = json.load(f)
@@ -22,8 +21,8 @@ def is_current_version(results_id, data_path, args):
 
 
 def write_version(results_id, data_path, status, args):
-    version_path = '%s\\%s\\version.json' % (data_path, results_id)
-    files_path = '%s\\%s\\files' % (data_path, results_id)
+    version_path = '%s/%s/version.json' % (data_path, results_id)
+    files_path = '%s/%s/files' % (data_path, results_id)
     os.makedirs(files_path, exist_ok=True)
     version_file = {'args': args, 'status': status}
     with open(version_path, 'w') as f:
@@ -31,8 +30,8 @@ def write_version(results_id, data_path, status, args):
 
 
 def write_result_set(results_id, data_path, sets_path):
-    set_file = '%s\\%s.json' % (sets_path, results_id)
-    files_path = '%s\\%s\\files' % (data_path, results_id)
+    set_file = '%s/%s.json' % (sets_path, results_id)
+    files_path = '%s/%s/files' % (data_path, results_id)
     files_list = list_folder(files_path, full_path=True)
     with open(set_file, 'w') as f:
         json.dump(files_list, f)

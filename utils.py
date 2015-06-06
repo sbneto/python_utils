@@ -5,14 +5,13 @@ import datetime
 import pickle
 from itertools import tee
 import threading
-import logging
 import json
 import ujson
 import bz2
 
+from .logger import *
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+log = initialize_logging(__name__)
 
 
 def cross(o, a, b):
@@ -101,7 +100,7 @@ def safe_thread_start(function, arguments, timeout):
     if got_lock.wait(timeout):
         return thread
     else:
-        logger.error('Unresponsive thread.')
+        log.error('Unresponsive thread.')
         raise SafeThreadError('Unresponsive thread.')
 
 
@@ -120,10 +119,9 @@ def json_loader(path):
                     json_dict[key] = json.load(f)
             return json_dict
         except Exception as e:
-            logger.exception(e)
+            log.exception(e)
             raise e
     return loader
-
 
 def bz2_json_iterator(path):
     with bz2.BZ2File(path, 'rb') as f:
@@ -135,6 +133,7 @@ def write_json_object(obj, path, file_name):
     file_path = '%s/%s' % (path, file_name)
     with open(file_path, 'w') as f:
         json.dump(obj, f)
+
 
 def path_name(*args):
     return '/'.join(args)

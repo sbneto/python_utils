@@ -3,6 +3,10 @@ __author__ = 'Samuel'
 import bz2
 
 from collections import OrderedDict
+from .logger import *
+
+log = initialize_logging(__name__)
+
 
 class FilePool:
     def __init__(self, size):
