@@ -124,9 +124,15 @@ def json_loader(path):
     return loader
 
 def bz2_json_iterator(path):
-    with bz2.BZ2File(path, 'rb') as f:
-        for line in f:
-            yield ujson.loads(line.decode('utf-8'))
+    file_type = path.split('.')[-1]
+    if file_type == 'bz2':
+        with bz2.BZ2File(path, 'rb') as f:
+            for line in f:
+                yield ujson.loads(line.decode('utf-8'))
+    else:
+        with open(path, 'rt', encoding='utf-8') as f:
+            for line in f:
+                yield ujson.loads(line)
 
 
 def write_json_object(obj, path, file_name):
