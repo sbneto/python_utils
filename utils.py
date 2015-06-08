@@ -123,7 +123,7 @@ def json_loader(path):
             raise e
     return loader
 
-def bz2_json_iterator(path):
+def json_iterator(path):
     file_type = path.split('.')[-1]
     if file_type == 'bz2':
         with bz2.BZ2File(path, 'rb') as f:
