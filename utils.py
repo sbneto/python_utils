@@ -3,12 +3,12 @@ __author__ = 'Samuel'
 import configparser
 import datetime
 import pickle
-from itertools import tee
 import threading
 import json
 import ujson
 import bz2
 
+from itertools import tee
 from .logger import *
 
 log = initialize_logging(__name__)

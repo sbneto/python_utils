@@ -67,7 +67,7 @@ def file_cache(f):
             write_version(args[0], args[1], 'running', args)
             result = f(*args, **kwargs)
             write_version(args[0], args[1], 'success', args)
-            write_result_set(args[0], args[1], args[2])
+            # write_result_set(args[0], args[1], args[2])
             return result
         return False
     return wrapper
