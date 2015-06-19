@@ -2,13 +2,12 @@ __author__ = 'sam'
 
 import sys
 import os
-import logging
 import json
 import argparse
 
-logging.basicConfig(format='%(asctime)s %(levelname)s: (%(name)s) %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+from .logger import initialize_logging
+
+log = initialize_logging()
 
 def list_folder(dir_path, full_path=False, directories=False):
     dir_list = []

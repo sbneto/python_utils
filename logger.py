@@ -5,12 +5,21 @@ import logging
 import inspect
 
 
-def initialize_logging(name, file_name=None):
+def initialize_logging(name=None, file_name=None):
+    if not name:
+        try:
+            frame = inspect.stack()[1]
+            module = inspect.getmodule(frame[0])
+            logger_name = module.__name__
+        finally:
+            del module
+            del frame
+    log_format = '%(asctime)s %(levelname)s: (%(name)s) %(message)s'
     if file_name:
-        logging.basicConfig(filename=file_name, format='%(asctime)s %(levelname)s: (%(name)s) %(message)s')
+        logging.basicConfig(filename=file_name, format=log_format)
     else:
-        logging.basicConfig(format='%(asctime)s %(levelname)s: (%(name)s) %(message)s')
-    logger = logging.getLogger(__name__)
+        logging.basicConfig(format=log_format)
+    logger = logging.getLogger(name if name else logger_name)
     logger.setLevel(logging.DEBUG)
     return logger
 
@@ -31,17 +40,12 @@ def trace_log(logger=None):
         @functools.wraps(f)
         def wrapper(*args, **kwargs):
             try:
-                frame = inspect.stack()[1]
-                module = inspect.getmodule(frame[0])
-                logger.debug('(%s) Entering function %s' % (module.__name__, f.__name__))
+                logger.debug('Entering function %s' % f.__name__)
                 result = f(*args, **kwargs)
-                logger.debug('(%s) Exiting function %s' % (module.__name__, f.__name__))
+                logger.debug('Exiting function %s' % f.__name__)
                 return result
             except Exception as e:
                 logger.exception(e)
                 raise e
-            finally:
-                del module
-                del frame
         return wrapper
     return wrapper_with_args

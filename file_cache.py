@@ -4,8 +4,9 @@ import os
 import json
 import functools
 
-from utils.list_folder import list_folder
+from .logger import initialize_logging
 
+log = initialize_logging()
 
 def is_current_version(results_id, data_path, args):
     try:
@@ -27,14 +28,6 @@ def write_version(results_id, data_path, status, args):
     version_file = {'args': args, 'status': status}
     with open(version_path, 'w') as f:
         json.dump(version_file, f)
-
-
-def write_result_set(results_id, data_path, sets_path):
-    set_file = '%s/%s.json' % (sets_path, results_id)
-    files_path = '%s/%s/files' % (data_path, results_id)
-    files_list = list_folder(files_path, full_path=True)
-    with open(set_file, 'w') as f:
-        json.dump(files_list, f)
 
 
 def dicteq(d1, d2):
