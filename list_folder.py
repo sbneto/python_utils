@@ -5,10 +5,6 @@ import os
 import json
 import argparse
 
-from .logger import initialize_logging
-
-log = initialize_logging()
-
 def list_folder(dir_path, full_path=False, directories=False):
     dir_list = []
     for item in os.listdir(dir_path):
