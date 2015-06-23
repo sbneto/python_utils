@@ -3,6 +3,8 @@ __author__ = 'Samuel'
 import os
 import multiprocessing as _mp
 
+from threading import Lock
+from multiprocessing.managers import BaseManager
 from multiprocessing.connection import wait
 
 from .logger import initialize_logging
@@ -35,3 +37,22 @@ class Pool:
                 if arg:
                     add_process(existing_processes, func, arg)
                     arg = next(args, False)
+
+class ResourceLock:
+    def __init__(self):
+        self.locks = {}
+
+    def acquire(self, resource, blocking=True, timeout=-1):
+        try:
+            self.locks[resource].acquire(blocking, timeout)
+        except KeyError:
+            self.locks[resource] = Lock()
+            self.locks[resource].acquire(blocking, timeout)
+
+    def release(self, resource):
+        self.locks[resource].release()
+
+class ResourceManager(BaseManager):
+    pass
+
+ResourceManager.register('ResourceLock', ResourceLock)
