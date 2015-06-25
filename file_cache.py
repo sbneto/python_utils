@@ -4,30 +4,38 @@ import os
 import json
 import functools
 
+from inspect import signature
+
 from .logger import initialize_logging
 
 log = initialize_logging()
 
-def is_current_version(results_id, data_path, args):
+
+def get_path(id_):
+    return './.file_cache/%s_version.json' % (id_.replace('C:/', '')
+                                              .replace('c:/', '')
+                                              .replace('C:\\', '')
+                                              .replace('c:\\', '')
+                                              .replace('/', '_'))
+
+
+def get_version(id_):
+    os.makedirs('./.file_cache', exist_ok=True)
+    version_path = get_path(id_)
     try:
-        version_path = '%s/%s/version.json' % (data_path, results_id)
-        if os.path.isfile(version_path):
-            with open(version_path, 'r') as f:
-                version_file = json.load(f)
-            if version_file['status'] == 'success' and argseq(args, version_file['args']):
-                return True
-    except ValueError:
-        pass
-    return False
+        with open(version_path, 'r') as f:
+            version_file = json.load(f)
+        return version_file
+    except FileNotFoundError:
+        return {}
 
 
-def write_version(results_id, data_path, status, args):
-    version_path = '%s/%s/version.json' % (data_path, results_id)
-    files_path = '%s/%s/files' % (data_path, results_id)
-    os.makedirs(files_path, exist_ok=True)
-    version_file = {'args': args, 'status': status}
+def write_version(id_, status, args):
+    os.makedirs('./.file_cache', exist_ok=True)
+    version_path = get_path(id_)
+    version_data = {'status': status, 'args': args}
     with open(version_path, 'w') as f:
-        json.dump(version_file, f)
+        json.dump(version_data, f)
 
 
 def dicteq(d1, d2):
@@ -53,14 +61,29 @@ def argseq(arg1, arg2):
     return True
 
 
-def file_cache(f):
-    @functools.wraps(f)
-    def wrapper(*args, **kwargs):
-        if not is_current_version(args[0], args[1], args):
-            write_version(args[0], args[1], 'running', args)
-            result = f(*args, **kwargs)
-            write_version(args[0], args[1], 'success', args)
-            # write_result_set(args[0], args[1], args[2])
-            return result
+def is_version(version, verify):
+    try:
+        if type(verify) is tuple:
+            return argseq(verify, version['args'])
+        else:
+            return version['status'] == verify
+    except (ValueError, KeyError):
         return False
-    return wrapper
+
+
+def file_cache(path_name=None):
+    def wrapper_with_args(f):
+        arg_pos = list(signature(f).parameters).index(path_name)
+
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            id_ = args[arg_pos]
+            current = get_version(id_)
+            if not is_version(current, args) or not is_version(current, 'success'):
+                write_version(id_, 'running', args)
+                result = f(*args, **kwargs)
+                write_version(id_, 'success', args)
+                return result
+            return False
+        return wrapper
+    return wrapper_with_args
