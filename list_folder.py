@@ -21,6 +21,13 @@ def list_folder(dir_path, full_path=False, directories=False):
                 dir_list.append(item_path)
     return dir_list
 
+def write_list(path, output, fullpath, directories):
+    files_list = list_folder(path, fullpath, directories)
+
+    output_path = output if output else '%s/%s.json' % (os.getcwd(), os.path.basename(path))
+    with open(output_path, 'w') as f:
+        json.dump(files_list, f)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('path')
@@ -31,11 +38,7 @@ def main():
     parser.set_defaults(directories=False)
     args = parser.parse_args()
 
-    files_list = list_folder(args.path, args.fullpath, args.directories)
-
-    output_path = args.output if args.output else '%s/%s.json' % (os.getcwd(), os.path.basename(args.path))
-    with open(output_path, 'w') as f:
-        json.dump(files_list, f)
+    write_list(args.path, args.output, args.fullpath, args.directories)
 
 if __name__ == '__main__':
     sys.exit(main())
