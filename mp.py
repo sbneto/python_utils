@@ -2,6 +2,7 @@ __author__ = 'Samuel'
 
 import os
 import multiprocessing as _mp
+import itertools
 
 from threading import Lock
 from multiprocessing.managers import BaseManager
@@ -18,6 +19,17 @@ def add_process(processes, func, arg):
     processes[p.sentinel] = p
 
 
+def loop_function(f, args):
+    for arg in args:
+        f(*arg)
+
+
+def get_arg(args, chuncksize):
+    if chuncksize:
+        return [u for u in itertools.islice(args, 0, chuncksize)]
+    else:
+        return [u for u in itertools.islice(args, 0, 1)]
+
 class Pool:
     def __init__(self, processes=None):
         self.processes = processes if processes else os.cpu_count() + 2
@@ -26,17 +38,17 @@ class Pool:
         args = iter(iterable)
         existing_processes = {}
 
-        arg = next(args, False)
+        arg = get_arg(args, chunksize)
         while len(existing_processes) < self.processes and arg:
-            add_process(existing_processes, func, arg)
-            arg = next(args, False)
+            add_process(existing_processes, loop_function, (func, arg))
+            arg = get_arg(args, chunksize)
 
         while existing_processes:
             for s in wait(existing_processes):
                 del existing_processes[s]
                 if arg:
-                    add_process(existing_processes, func, arg)
-                    arg = next(args, False)
+                    add_process(existing_processes, loop_function, (func, arg))
+                    arg = get_arg(args, chunksize)
 
 class ResourceLock:
     def __init__(self):

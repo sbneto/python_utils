@@ -13,10 +13,13 @@ class FilePool:
     def __init__(self, size):
         self.size = size
         self.pool = OrderedDict()
+        self.hit = 0
+        self.miss = 0
 
     def open(self, filename, mode):
         if filename in self.pool:
             self.pool.move_to_end(filename, last=False)
+            self.hit += 1
             return self.pool[filename]
 
         file_type = filename.split('.')[-1]
@@ -32,6 +35,8 @@ class FilePool:
             _, old_f = self.pool.popitem(last=False)
             old_f.close()
         self.pool[filename] = f
+        
+        self.miss += 1
         return f
 
     def close(self):
