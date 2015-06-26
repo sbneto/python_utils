@@ -3,6 +3,7 @@ __author__ = 'Samuel'
 import os
 import json
 import functools
+import time
 
 from inspect import signature
 
@@ -33,7 +34,7 @@ def get_version(id_):
 def write_version(id_, status, args):
     os.makedirs('./.file_cache', exist_ok=True)
     version_path = get_path(id_)
-    version_data = {'status': status, 'args': args}
+    version_data = {'status': status, 'timestamp': time.time(), 'args': args}
     with open(version_path, 'w') as f:
         json.dump(version_data, f)
 

@@ -111,10 +111,10 @@ def chooser(key):
 
 
 def json_loader(path):
-    def loader(files_dict):
+    def loader(files_list):
         try:
             json_dict = {}
-            for key, file_name in files_dict.items():
+            for key, file_name in files_list.items():
                 with open('%s/%s' % (path, file_name)) as f:
                     json_dict[key] = json.load(f)
             return json_dict
