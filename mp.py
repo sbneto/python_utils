@@ -21,7 +21,10 @@ def add_process(processes, func, arg):
 
 def loop_function(f, args):
     for arg in args:
-        f(*arg)
+        try:
+            f(*arg)
+        except Exception as e:
+            log.exception(e)
 
 
 def get_arg(args, chuncksize):

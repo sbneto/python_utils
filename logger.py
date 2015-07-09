@@ -20,7 +20,7 @@ def initialize_logging(name=None, file_name=None):
     else:
         logging.basicConfig(format=log_format)
     logger = logging.getLogger(name if name else logger_name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     return logger
 
 def basic_log(logger=None):
