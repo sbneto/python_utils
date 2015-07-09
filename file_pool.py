@@ -8,28 +8,26 @@ from .logger import *
 
 log = initialize_logging()
 
-
 class FilePool:
-    def __init__(self, size):
+    def __init__(self, size, compression=None):
         self.size = size
+        self.compression = compression
         self.pool = OrderedDict()
         self.hit = 0
         self.miss = 0
 
-    def open(self, filename, mode):
+    def open(self, filename, mode, encoding=None):
         if filename in self.pool:
             self.pool.move_to_end(filename, last=False)
             self.hit += 1
             return self.pool[filename]
 
-        file_type = filename.split('.')[-1]
-        if file_type == 'bz2':
-            f = bz2.open(filename, mode)
+        if 't' in mode:
+            encoding = 'utf-8'
+        if self.compression == 'bz2':
+            f = bz2.open(filename, mode, encoding=encoding)
         else:
-            if 't' in mode:
-                f = open(filename, mode, encoding='utf-8')
-            else:
-                f = open(filename, mode)
+            f = open(filename, mode, encoding=encoding)
 
         if len(self.pool) >= self.size:
             _, old_f = self.pool.popitem(last=False)

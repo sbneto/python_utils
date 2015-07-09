@@ -21,7 +21,7 @@ def list_folder(dir_path, full_path=False, directories=False):
                 dir_list.append(item_path)
     return dir_list
 
-def write_list(path, output, fullpath, directories):
+def write_list(path, output, fullpath=False, directories=False):
     files_list = list_folder(path, fullpath, directories)
 
     output_path = output if output else '%s/%s.json' % (os.getcwd(), os.path.basename(path))
