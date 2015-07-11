@@ -14,7 +14,7 @@ log = initialize_logging()
 
 
 def add_process(processes, func, arg):
-    p = _mp.Process(target=func, args=arg)
+    p = _mp.Process(target=func, args=arg, name=str(len(processes)))
     p.start()
     processes[p.sentinel] = p
 
@@ -48,10 +48,13 @@ class Pool:
 
         while existing_processes:
             for s in wait(existing_processes):
+                if existing_processes[s].exitcode != 0:
+                    raise ChildProcessError
                 del existing_processes[s]
                 if arg:
                     add_process(existing_processes, loop_function, (func, arg))
                     arg = get_arg(args, chunksize)
+
 
 class ResourceLock:
     def __init__(self):
@@ -66,6 +69,7 @@ class ResourceLock:
 
     def release(self, resource):
         self.locks[resource].release()
+
 
 class ResourceManager(BaseManager):
     pass

@@ -82,7 +82,10 @@ def file_cache(path_name=None):
             current = get_version(id_)
             if not is_version(current, args) or not is_version(current, 'success'):
                 write_version(id_, 'running', args)
-                result = f(*args, **kwargs)
+                try:
+                    result = f(*args, **kwargs)
+                except Exception:
+                    raise
                 write_version(id_, 'success', args)
                 return result
             return False
