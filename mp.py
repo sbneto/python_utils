@@ -33,6 +33,7 @@ def get_arg(args, chuncksize):
     else:
         return [u for u in itertools.islice(args, 0, 1)]
 
+
 class Pool:
     def __init__(self, processes=None):
         self.processes = processes if processes else os.cpu_count() + 2
@@ -49,7 +50,7 @@ class Pool:
         while existing_processes:
             for s in wait(existing_processes):
                 if existing_processes[s].exitcode != 0:
-                    raise ChildProcessError
+                    raise ChildProcessError('Exit code %s' % existing_processes[s].exitcode)
                 del existing_processes[s]
                 if arg:
                     add_process(existing_processes, loop_function, (func, arg))
