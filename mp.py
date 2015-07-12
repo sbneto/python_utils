@@ -48,8 +48,9 @@ class Pool:
             arg = get_arg(args, chunksize)
 
         while existing_processes:
+            failed = set()
             for s in wait(existing_processes):
-                if existing_processes[s].exitcode:
+                if existing_processes[s].exitcode is not None:
                     if existing_processes[s].exitcode != 0:
                         raise ChildProcessError('Exit code %s' % existing_processes[s].exitcode)
                     del existing_processes[s]
@@ -57,7 +58,10 @@ class Pool:
                         add_process(existing_processes, loop_function, (func, arg))
                         arg = get_arg(args, chunksize)
                 else:
-                    log.error('%s: Process sentinel is ready but exitcode is %s' % (s, existing_processes[s].exitcode))
+                    if s not in failed:
+                        log.error('%s: Process sentinel is ready but exitcode is %s' %
+                                  (s, existing_processes[s].exitcode))
+                        failed.add(s)
 
 
 class ResourceLock:
