@@ -51,6 +51,9 @@ class Pool:
             failed = set()
             for s in wait(existing_processes):
                 if existing_processes[s].exitcode is not None:
+                    if s in failed:
+                        log.error('%s: Process sentinel is ready and exitcode is now available as %s' %
+                                  (s, existing_processes[s].exitcode))
                     if existing_processes[s].exitcode != 0:
                         raise ChildProcessError('Exit code %s' % existing_processes[s].exitcode)
                     del existing_processes[s]

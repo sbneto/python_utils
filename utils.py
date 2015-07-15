@@ -143,3 +143,24 @@ def write_json_object(obj, path, file_name):
 
 def path_name(*args):
     return '/'.join(args)
+
+
+def str_to_base36(number, alphabet='0123456789abcdefghijklmnopqrstuvwxyz'):
+    if number < 0:
+        sign = '-'
+        number = -number
+    else:
+        sign = ''
+    number, mod = divmod(number, 36)
+    str_number = alphabet[mod]
+    while number > 0:
+        number, mod = divmod(number, 36)
+        str_number = alphabet[mod] + str_number
+    return sign + str_number
+
+
+def base36toggle(number):
+    if type(number) == int:
+        return str_to_base36(number)
+    else:
+        return int(number, 36)
