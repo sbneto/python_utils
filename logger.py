@@ -13,10 +13,13 @@ def initialize_logging(name=None, file_name=None):
         del module
         del frame
     log_format = '%(asctime)s %(levelname)s: (%(name)s) %(message)s'
+    logging.captureWarnings(capture=True)
     if file_name:
         logging.basicConfig(filename=file_name, format=log_format)
     else:
         logging.basicConfig(format=log_format)
+    warnings_log = logging.getLogger('py.warnings')
+    warnings_log.propagate = False
     logger = logging.getLogger(name if name else logger_name)
     logger.setLevel(logging.INFO)
     return logger
