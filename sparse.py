@@ -2,11 +2,13 @@ __author__ = 'Samuel'
 
 from scipy.sparse import coo_matrix
 
+
 def add_bimap(bimap, item):
     if item not in bimap:
         idx = len(bimap)//2
         bimap[idx] = item
         bimap[item] = idx
+
 
 class SparseOccurrenceMatrix:
     def __init__(self):
